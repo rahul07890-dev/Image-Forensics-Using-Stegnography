@@ -56,7 +56,7 @@ This project demonstrates an **Image Forensics System** built using Flask, which
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/Image-Forensics-Using-Steganography.git
+    git clone https://github.com/rahul07890-dev/Image-Forensics-Using-Stegnography
     cd Image-Forensics-Using-Steganography
     ```
 
@@ -105,7 +105,7 @@ Contributions are welcome! Feel free to fork this repository, create a branch, a
 ---
 
 ## License
-This project is licensed under the Apache 2.0 License. See the LICENSE file for details.
+This project is licensed under the Apache License 2.0. See the LICENSE file for details.
 
 ---
 
