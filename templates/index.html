@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Forensics Using Steganography</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Image Forensics Using Steganography</h1>
+        <p>Analyze images for hidden information using Steganographic techniques like LSB (Least Significant Bit) analysis.</p>
+    </header>
+    <section id="upload">
+        <h2>Upload Image for Analysis</h2>
+        <div class="file-upload">
+            <input type="file" id="imageFile" accept="image/*" />
+        </div>
+        <button class="btn-primary" onclick="uploadImage()">Analyze Image</button>
+        <p id="status"></p>
+    </section>
+    <section id="results" style="display: none;">
+        <h2>Analysis Results</h2>
+        <div id="analysisOutput">
+            <div class="result-item">
+                <h3>Original Image</h3>
+                <img id="originalImage" alt="Original Image">
+            </div>
+            <div class="result-item">
+                <h3>LSB Image</h3>
+                <img id="lsbImage" alt="LSB Image">
+            </div>
+            <div class="result-item">
+                <h3>LSB Pixel Intensity Graph</h3>
+                <img id="lsbGraph" alt="LSB Graph">
+            </div>
+            <div class="result-item">
+                <h3>Image Intensity Histogram</h3>
+                <img id="histogram" alt="Histogram">
+            </div>
+        </div>
+        <div id="downloadSection" style="margin-top: 20px;">
+            <h3>Download Results</h3>
+            <ul id="downloadLinks"></ul>
+        </div>
+    </section>
+    <footer>
+        <p>Developed by <strong>Rahul</strong></p>
+    </footer>
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const status = document.getElementById('status');
+            const resultsSection = document.getElementById('results');
+            const originalImage = document.getElementById('originalImage');
+            const lsbImage = document.getElementById('lsbImage');
+            const lsbGraph = document.getElementById('lsbGraph');
+            const histogram = document.getElementById('histogram');
+            const downloadLinks = document.getElementById('downloadLinks');
+
+            if (fileInput.files.length === 0) {
+                status.textContent = "Please select an image file.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+
+            status.textContent = `Analyzing file: ${file.name}...`;
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    status.textContent = data.error;
+                } else {
+                    status.textContent = "Analysis complete!";
+                    resultsSection.style.display = "block";
+
+                    originalImage.src = data.original_image;
+                    lsbImage.src = data.lsb_image;
+                    lsbGraph.src = data.lsb_graph;
+                    histogram.src = data.histogram;
+
+                    downloadLinks.innerHTML = "";
+                    const files = [
+                        { name: "Original Image", url: data.original_image },
+                        { name: "LSB Image", url: data.lsb_image },
+                        { name: "LSB Pixel Intensity Graph", url: data.lsb_graph },
+                        { name: "Image Intensity Histogram", url: data.histogram },
+                    ];
+
+                    files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = file.url;
+                        link.download = file.name.replace(/ /g, "_") + ".png";
+                        link.textContent = `Download ${file.name}`;
+                        listItem.appendChild(link);
+                        downloadLinks.appendChild(listItem);
+                    });
+                }
+            })
+            .catch(error => {
+                status.textContent = "Error during analysis.";
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>
